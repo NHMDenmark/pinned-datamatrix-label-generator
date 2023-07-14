@@ -37,6 +37,10 @@ def array_to_svg(array: np.ndarray) -> str:
     Returns:
         A string containing the SVG code of the image.
     """
+    if array.ndim != 2:
+        raise ValueError("Array must be 2D.")
+    if array.dtype != bool:
+        raise ValueError("Array must be boolean.")
 
     height, width = array.shape
 
