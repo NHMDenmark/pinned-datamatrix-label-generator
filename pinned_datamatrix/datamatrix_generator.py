@@ -2,6 +2,7 @@ from pylibdmtx.pylibdmtx import encode, ENCODING_SIZE_NAMES
 import numpy as np
 from PIL.Image import frombytes
 from xml.etree import ElementTree as ET
+from .utils import svg_to_pil
 
 
 class DataMatrix:
