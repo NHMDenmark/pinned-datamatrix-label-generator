@@ -22,7 +22,10 @@ class DataMatrix:
             A 2D NumPy array of booleans representing black and white pixels.
         """
         if not isinstance(self.data, str):
-            raise TypeError("Data must be a string")
+            # Specify which type was given, and what was expected
+            raise TypeError(
+                f"Expected data to be of type str, got {type(self.data).__name__}"
+            )
         datamatrix = encode(self.data.encode("utf-8"), size=self.size)
 
         img = frombytes("RGB", (datamatrix.width, datamatrix.height), datamatrix.pixels)
