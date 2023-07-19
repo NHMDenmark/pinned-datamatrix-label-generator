@@ -69,14 +69,32 @@ class TestDataMatrix:
         assert result.text == data
 
     @pytest.mark.parametrize(
-        "input_data, expected_error",
+        "data, size, expected_error",
         [
-            ((1234, "ShapeAuto"), TypeError),
-            (("Hello world!", "InvalidSize"), ValueError),
-            (("Hello world!" * 100, "10x10"), PyLibDMTXError),
+            (1234, "ShapeAuto", TypeError),
+            ("Hello world!", "InvalidSize", ValueError),
+            ("Hello world!" * 100, "10x10", PyLibDMTXError),
+            ("", "10x10", PyLibDMTXError),
+            ("a" * 1559, "144x144", PyLibDMTXError),
         ],
     )
-    def test_invalid_input(self, input_data, expected_error):
-        data, size = input_data
+    def test_invalid_input(self, data: str, size: str, expected_error):
         with pytest.raises(expected_error):
             DataMatrix(data, size)
+
+    @pytest.mark.parametrize(
+        "data, size, expected_width, expected_height,",
+        [
+            ("   ", "10x10", 14, 14),  # data with spaces only
+            ("\t\n", "10x10", 14, 14),  # data with tab and newline characters only
+            ("a" * 1558, "144x144", 148, 148),  # data with maximum length for this size
+        ],
+    )
+    def test_datamatrix_edge_cases(
+        self, data: str, size: str, expected_width: int, expected_height: int
+    ):
+        dm = DataMatrix(data, size)
+        svg = dm.create_svg()
+        width, height = self.extract_svg_dimensions(svg)
+        assert width == expected_width
+        assert height == expected_height
