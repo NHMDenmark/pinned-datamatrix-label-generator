@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "pinned_datamatrix"
 license = "MIT"
 authors = [
-    { name = "Laurits Fredsgaard Larsen", email = "" },
+    { name = "Laurits Fredsgaard Larsen", email = "laurits@fredsgaardlarsen.com" },
 ]
 dynamic = ["version"]
 
@@ -26,12 +26,13 @@ authors = ["Laurits Fredsgaard Larsen <>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
+reportlab = "^4.0.4"
 pylibdmtx = "^0.1.10"
 numpy = "^1.25.1"
 Pillow = "^10.0.0"
+svglib ="^1.5.1"
+rlPyCairo = "^0.3.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
 zxing-cpp = "^2.1.0"
-reportlab = "^4.0.4"
-svglib ="^1.5.1"

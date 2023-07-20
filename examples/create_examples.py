@@ -1,7 +1,16 @@
 from pinned_datamatrix.datamatrix_generator import DataMatrix
 from pinned_datamatrix.label_generator import Label
+from pinned_datamatrix.sheet_generator import Sheet
 from pinned_datamatrix.utils import svg_to_pil
 import xml.etree.ElementTree as ET
+from reportlab.graphics import renderPDF
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import mm
+from svglib.svglib import svg2rlg
+import io
+
+SVG_NAMESPACE = "http://www.w3.org/2000/svg"
+ET.register_namespace("", SVG_NAMESPACE)
 
 
 def create_example_datamatrix():
@@ -38,7 +47,34 @@ def create_example_label():
     img = svg_to_pil(label.svg)
     img.save("examples/example_label.png")
 
+    # save pdf
+    drawing = svg2rlg(io.StringIO(label.svg_to_string()))
+    c = canvas.Canvas("examples/example_label.pdf", pagesize=(12 * mm, 5 * mm))
+    renderPDF.draw(drawing, c, 0, 0)
+    c.save()
+
+
+def create_example_sheet():
+    sheet = Sheet(
+        labels=[
+            Label(
+                data=str(num).zfill(9),
+                width=12,
+                height=5,
+                font_size=3.7,
+                text_lines=["NHMD", str(num).zfill(9)],
+                check_overlap=False,  # ignore tiny overlap between text and datamatrix
+            )
+            for num in range(1000)
+        ],
+        output_path="examples/example_sheet.pdf",
+        double_sided=True,
+    )
+    sheet.generate()
+    sheet.c.save()
+
 
 if __name__ == "__main__":
     create_example_datamatrix()
     create_example_label()
+    create_example_sheet()
