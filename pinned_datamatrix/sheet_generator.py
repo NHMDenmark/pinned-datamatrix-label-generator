@@ -2,10 +2,12 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.units import mm
 from reportlab.lib.pagesizes import A4
 from reportlab.graphics import renderPDF, renderPM
-from reportlab.graphics.shapes import Drawing
+from reportlab.graphics.shapes import Drawing, Rect
 from svglib.svglib import svg2rlg
-from .label_generator import Label
 import io
+from tqdm import tqdm
+
+from .label_generator import Label
 
 
 class Sheet:
@@ -31,6 +33,39 @@ class Sheet:
         self.c = canvas.Canvas(self.output_path, pagesize=(self.width, self.height))
 
         self._validate_inputs()
+
+        # make a drawing of the label padding box
+        label_width, label_height = (
+            self.labels[0].width * mm,
+            self.labels[0].height * mm,
+        )
+        padding_box_width = label_width + self.label_padding * 2
+        padding_box_height = label_height + self.label_padding * 2
+        self.label_padding_box = Drawing(
+            width=padding_box_width, height=padding_box_height
+        )
+        self.label_padding_box.add(
+            Rect(
+                x=0,
+                y=0,
+                width=padding_box_width,
+                height=padding_box_height,
+                fillColor="#eeeeee",
+                strokeColor=None,
+            )
+        )
+        self.label_padding_box.add(
+            Rect(
+                x=self.label_padding,
+                y=self.label_padding,
+                width=label_width,
+                height=label_height,
+                fillColor="#ffffff",
+                strokeColor=None,
+            )
+        )
+        self.label_padding_box_back = self.label_padding_box.copy()
+        self.label_padding_box_back.rotate(180)
 
     def _validate_inputs(self):
         if not all(isinstance(label, Label) for label in self.labels):
@@ -63,8 +98,21 @@ class Sheet:
             # Position the label on the back side of the page (rotated 180 degrees)
             drawing.rotate(180)
             x_back = self.width - x
+            renderPDF.draw(
+                self.label_padding_box_back,
+                self.c,
+                x_back + self.label_padding,
+                y + self.label_padding,
+            )
             renderPDF.draw(drawing, self.c, x_back, y)
         else:
+            # draw padding box first. substract padding from x and y
+            renderPDF.draw(
+                self.label_padding_box,
+                self.c,
+                x - self.label_padding,
+                y - self.label_padding - drawing.height,
+            )
             renderPDF.draw(drawing, self.c, x, y - drawing.height)
 
     def _handle_page_overflow(
@@ -99,7 +147,9 @@ class Sheet:
         backs = []
         x = self.margin_left
         y = self.height - self.margin_top
-        for label in self.labels:
+        labels = tqdm(self.labels, desc="Drawing labels on pdf pages")
+        for label in labels:
+            # The conversion from svg to rlg is the slowest part of the process
             drawing = svg2rlg(io.StringIO(label.svg_to_string()))
             if drawing is None:
                 raise ValueError("Failed to create drawing from SVG data.")

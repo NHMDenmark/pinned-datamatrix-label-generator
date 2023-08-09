@@ -4,35 +4,53 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pinned_datamatrix"
+dynamic = ["version"]
 license = "MIT"
 authors = [
     { name = "Laurits Fredsgaard Larsen", email = "laurits@fredsgaardlarsen.com" },
 ]
-dynamic = ["version"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Printing",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Framework :: Pytest",
+]
 
+# Dependency specifications
+requires-python = ">=3.10"
+dependencies = [
+    "reportlab>=4.0.4",
+    "pylibdmtx>=0.1.10",
+    "numpy~=1.25.1",
+    "Pillow~=10.0.0",
+    "svglib~=1.5.1",
+    "rlPyCairo~=0.3.0",
+    "click>=8.1.6, <9.0.0",
+]
+
+# Entry points
+[project.scripts]
+pinned_datamatrix = "pinned_datamatrix.__main__:main"
+
+# Optional dependencies
+[project.optional-dependencies]
+dev = ["pytest~=6.2.5", "zxing-cpp~=2.1.0"]
+
+# Pytest configuration
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra -q --import-mode=importlib"
+addopts = """
+-ra -q 
+--import-mode=importlib 
+-W ignore::DeprecationWarning:pylibdmtx.wrapper 
+-W ignore::DeprecationWarning:importlib._bootstrap:283
+"""
 testpaths = ["tests"]
 
+# Versioning
 [tool.hatch.version]
 path = "pinned_datamatrix/__init__.py"
-
-[tool.poetry]
-name = "pinned_datamatrix"
-version = "0.1.0"
-description = "A library for generating datamatrix barcodes"
-authors = ["Laurits Fredsgaard Larsen <>"]
-
-[tool.poetry.dependencies]
-python = "^3.10"
-reportlab = "^4.0.4"
-pylibdmtx = "^0.1.10"
-numpy = "^1.25.1"
-Pillow = "^10.0.0"
-svglib ="^1.5.1"
-rlPyCairo = "^0.3.0"
-
-[tool.poetry.dev-dependencies]
-pytest = "^6.2.5"
-zxing-cpp = "^2.1.0"

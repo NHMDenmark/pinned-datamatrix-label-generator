@@ -40,13 +40,15 @@ class Label:
             raise ValueError("font_size must be positive")
         if len(text_lines) == 0:
             raise ValueError("text_lines must contain at least one line")
+        if not all(isinstance(line, str) for line in text_lines):
+            raise TypeError("text_lines must contain only strings")
         self.data = data
         self.width = width
         self.height = height
         self.text_lines = text_lines
         self.font_size = font_size
 
-        self.svg = self._setup_svg()
+        self.svg: ET.Element = self._setup_svg()
         self.datamatrix = self._add_datamatrix()
         self.dot = self._add_dot()
         self.text = self._add_text()
