@@ -18,10 +18,20 @@ register_font(
     weight="800",
 )
 
+ALIGNMENT_OPTIONS = {
+    "top_left": lambda width, height, margin: (margin, margin),
+    "top_center": lambda width, height, margin: (width / 2, margin),
+    "top_right": lambda width, height, margin: (width - margin, margin),
+    "center_left": lambda width, height, margin: (margin, height / 2),
+    "center": lambda width, height, margin: (width / 2, height / 2),
+    "center_right": lambda width, height, margin: (width - margin, height / 2),
+    "bottom_left": lambda width, height, margin: (margin, height - margin),
+    "bottom_center": lambda width, height, margin: (width / 2, height - margin),
+    "bottom_right": lambda width, height, margin: (width - margin, height - margin),
+}
+
 
 class Label:
-    DOT_DISTANCE = 0.7  # 0.7mm from left side
-    DOT_RADIUS = 0.25  # 0.25mm radius
     TEXT_SIDE_MARGIN = 1.3
     TEXT_VERTICAL_SPACE = 0.5
 
@@ -32,6 +42,9 @@ class Label:
         height: float,
         text_lines: list[str],
         font_size: float,
+        dot_radius: float = 0.25,  # 0.25 mm
+        dot_margin: float = 0.7,  # 0.7 mm
+        dot_alignment: str | None = "center_left",
         check_overlap: bool = True,
     ):
         if width <= 0 or height <= 0:
@@ -42,15 +55,23 @@ class Label:
             raise ValueError("text_lines must contain at least one line")
         if not all(isinstance(line, str) for line in text_lines):
             raise TypeError("text_lines must contain only strings")
+        if dot_alignment is not None and dot_alignment not in ALIGNMENT_OPTIONS.keys():
+            raise ValueError(f"dot_alignment must be one of {ALIGNMENT_OPTIONS.keys()}")
         self.data = data
         self.width = width
         self.height = height
+
         self.text_lines = text_lines
         self.font_size = font_size
 
+        self.dot_radius = dot_radius
+        self.dot_margin = dot_margin
+        self.dot_alignment = dot_alignment
+
         self.svg: ET.Element = self._setup_svg()
         self.datamatrix = self._add_datamatrix()
-        self.dot = self._add_dot()
+        if self.dot_alignment is not None:
+            self.dot = self._add_dot()
         self.text = self._add_text()
 
         if check_overlap:
@@ -100,13 +121,22 @@ class Label:
         return datamatrix
 
     def _add_dot(self) -> ET.Element:
+        if (
+            self.dot_alignment in ALIGNMENT_OPTIONS.keys()
+            and self.dot_alignment is not None
+        ):
+            cx, cy = ALIGNMENT_OPTIONS[self.dot_alignment](
+                self.width, self.height, self.dot_margin
+            )
+        else:
+            raise ValueError(f"dot_alignment must be one of {ALIGNMENT_OPTIONS.keys()}")
         dot = ET.Element(
             "circle",
             {
                 "id": "pin_dot",
-                "cx": str(self.DOT_DISTANCE),  # 0.7mm from left side
-                "cy": str(self.height / 2),  # center of label
-                "r": str(self.DOT_RADIUS),
+                "cx": str(cx),
+                "cy": str(cy),
+                "r": str(self.dot_radius),
             },
         )
         self.svg.append(dot)

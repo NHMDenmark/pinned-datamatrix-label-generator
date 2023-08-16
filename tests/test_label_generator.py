@@ -52,7 +52,7 @@ class TestLabel:
     def test_add_dot(self, test_label):
         dot = test_label._add_dot()
         assert dot.tag == "circle"
-        assert dot.attrib["cx"] == str(test_label.DOT_DISTANCE)
+        assert dot.attrib["cx"] == str(test_label.dot_margin)
 
     def test_add_text(self, test_label):
         text = test_label._add_text()
