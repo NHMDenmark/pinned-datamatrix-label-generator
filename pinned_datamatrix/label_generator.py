@@ -143,7 +143,8 @@ class Label:
         objs = drawing.contents[0].contents
         for i in range(len(objs)):
             for j in range(i + 1, len(objs)):
-                bounds1, bounds2 = objs[i].getBounds(), objs[j].getBounds()
+                bounds1: tuple[float, float, float, float] = objs[i].getBounds()
+                bounds2: tuple[float, float, float, float] = objs[j].getBounds()
                 if are_overlapping(bounds1, bounds2):
                     dx = min(bounds1[2], bounds2[2]) - max(bounds1[0], bounds2[0])
                     dy = min(bounds1[3], bounds2[3]) - max(bounds1[1], bounds2[1])

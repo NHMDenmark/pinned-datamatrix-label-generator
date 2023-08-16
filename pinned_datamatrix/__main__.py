@@ -5,7 +5,7 @@ from .label_generator import Label
 
 
 def parse_number_range(
-    ctx: click.Context, param: click.Parameter, value: str
+    ctx: click.Context | None, param: click.Parameter | None, value: str
 ) -> list[int]:
     try:
         result = []
@@ -53,7 +53,7 @@ def main(output: str, top_text: str, middle_text: str, numbers: list[int]):
 
 def generate_labels(top_text: str, middle_text: str, numbers: list[int]) -> list[Label]:
     labels = []
-    for number in tqdm(numbers, desc="Generating labels"):
+    for number in tqdm(iterable=numbers, desc="Generating labels"):
         data = str(number).zfill(9)
         text_lines = [top_text]
         if middle_text:

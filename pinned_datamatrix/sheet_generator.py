@@ -1,7 +1,7 @@
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import mm
 from reportlab.lib.pagesizes import A4
-from reportlab.graphics import renderPDF, renderPM
+from reportlab.graphics import renderPDF
 from reportlab.graphics.shapes import Drawing, Rect
 from svglib.svglib import svg2rlg
 import io
@@ -42,7 +42,7 @@ class Sheet:
         padding_box_width = label_width + self.label_padding * 2
         padding_box_height = label_height + self.label_padding * 2
         self.label_padding_box = Drawing(
-            width=padding_box_width, height=padding_box_height
+            width=padding_box_width, height=padding_box_height  # type: ignore # expects int, but any number is fine
         )
         self.label_padding_box.add(
             Rect(
