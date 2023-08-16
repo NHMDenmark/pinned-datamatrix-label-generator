@@ -73,6 +73,7 @@ class Label:
                 "width": f"{self.width}mm",
                 "height": f"{self.height}mm",
                 "style": "background-color: white",
+                "{http://www.w3.org/XML/1998/namespace}space": "preserve",
             },
         )
         return svg
