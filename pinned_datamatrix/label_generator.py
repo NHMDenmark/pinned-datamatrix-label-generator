@@ -173,8 +173,17 @@ class Label:
 
         objs = drawing.contents[0].contents
         for i in range(len(objs)):
+            bounds1: tuple[float, float, float, float] = objs[i].getBounds()
+            # check that it is within the label
+            if (
+                bounds1[0] < 0
+                or bounds1[1] < 0
+                or bounds1[2] > self.width
+                or bounds1[3] > self.height
+            ):
+                msg = f"Object {objs[i]} is outside of the label."
+                raise Warning(msg)
             for j in range(i + 1, len(objs)):
-                bounds1: tuple[float, float, float, float] = objs[i].getBounds()
                 bounds2: tuple[float, float, float, float] = objs[j].getBounds()
                 if are_overlapping(bounds1, bounds2):
                     dx = min(bounds1[2], bounds2[2]) - max(bounds1[0], bounds2[0])
