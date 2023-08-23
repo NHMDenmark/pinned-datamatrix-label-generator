@@ -28,7 +28,7 @@ jobs:
     - name: Install libdmtx
       run: |
         sudo apt-get update
-        sudo apt-get install -y libdmtx0a
+        sudo apt-get install -y libdmtx0b
     
     - name: Install dependencies
       run: |
