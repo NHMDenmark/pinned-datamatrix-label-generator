@@ -13,8 +13,8 @@ class TestLabel:
             width=12,
             height=5,
             text_lines=["NHMD", "123456789"],
-            font_size=3.7,
-            check_overlap=False,
+            font_size=3.55,
+            check_overlap=True,
         )
 
     def test_svg_to_string(self, test_label):
@@ -52,7 +52,7 @@ class TestLabel:
     def test_add_dot(self, test_label):
         dot = test_label._add_dot()
         assert dot.tag == "circle"
-        assert dot.attrib["cx"] == str(test_label.dot_margin)
+        assert dot.attrib["cx"] == str(test_label.dot_offset[0])
 
     def test_add_text(self, test_label):
         text = test_label._add_text()

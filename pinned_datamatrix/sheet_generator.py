@@ -15,7 +15,7 @@ class Sheet:
         self,
         labels: list[Label],
         output_path: str,
-        label_padding: float = 0.1,  # mm
+        label_padding: float = 0.5 / 2,  # mm
         page_size: tuple[float, float] = (297, 210),  # A4 landscape
         page_margins: tuple[float, float, float, float] = (15, 15, 15, 15),  # mm
         double_sided: bool = False,

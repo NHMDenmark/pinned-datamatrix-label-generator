@@ -1,7 +1,19 @@
 import click
 from tqdm import tqdm
+from functools import partial as Partial
+
+
 from .sheet_generator import Sheet
 from .label_generator import Label
+from .styles import NHMD, NHMA
+
+
+def validate_non_negative(
+    ctx: click.Context, param: click.Parameter, value: float
+) -> float:
+    if value < 0:
+        raise click.BadParameter("Label padding must be positive")
+    return value
 
 
 def parse_number_range(
@@ -27,14 +39,18 @@ def parse_number_range(
 
 @click.command()
 @click.option(
-    "--output",
-    "-o",
-    type=click.Path(exists=False, file_okay=True, dir_okay=False),
+    "--style",
+    "-s",
     required=True,
-    help="The output path of the PDF file",
+    type=click.Choice(["NHMD", "NHMA"]),
+    help="The label style",
 )
-@click.option("--top-text", "-t", type=str, required=True, help="The top text")
-@click.option("--middle-text", "-m", type=str, default="", help="The middle text")
+@click.option(
+    "--bottom-text",
+    "-b",
+    default="",
+    help="The bottom text for NHMA style labels",
+)
 @click.option(
     "--numbers",
     "-n",
@@ -42,32 +58,47 @@ def parse_number_range(
     callback=parse_number_range,
     help="The numbers as a range or list",
 )
-def main(output: str, top_text: str, middle_text: str, numbers: list[int]):
+@click.option(
+    "--output",
+    "-o",
+    type=click.Path(exists=False, file_okay=True, dir_okay=False),
+    required=True,
+    help="The output path of the PDF file",
+)
+@click.option(
+    "--label-padding",
+    "-p",
+    default=0.25,  # = 5mm between each label
+    help="The padding around the label in mm",
+    callback=validate_non_negative,
+)
+def main(style, bottom_text, numbers, output, label_padding):
     """
     Generate a PDF with datamatrix labels
     """
 
-    labels = generate_labels(top_text, middle_text, numbers)
-    generate_pdf(labels, output, double_sided=True)
+    label_func = (
+        Partial(NHMD) if style == "NHMD" else Partial(NHMA, bottom_text=bottom_text)
+    )
+    labels = generate_labels(label_func, numbers)
+    generate_pdf(labels, output, double_sided=True, label_padding=label_padding)
 
 
-def generate_labels(top_text: str, middle_text: str, numbers: list[int]) -> list[Label]:
-    labels = []
-    for number in tqdm(iterable=numbers, desc="Generating labels"):
-        data = str(number).zfill(9)
-        text_lines = [top_text]
-        if middle_text:
-            text_lines.append(middle_text)
-        text_lines.append(str(number))
-        label = Label(
-            data=data, width=12.0, height=5.0, text_lines=text_lines, font_size=3.55
-        )
-        labels.append(label)
-    return labels
+def generate_labels(label_func: Partial, numbers: list[int]) -> list[Label]:
+    numbers_it = tqdm(iterable=numbers, desc="Generating labels")
+    labels = map(label_func, numbers_it)
+    return list(labels)
 
 
-def generate_pdf(labels: list[Label], output: str, double_sided: bool):
-    sheet = Sheet(labels=labels, output_path=output, double_sided=double_sided)
+def generate_pdf(
+    labels: list[Label], output: str, double_sided: bool, label_padding: float
+):
+    sheet = Sheet(
+        labels=labels,
+        output_path=output,
+        double_sided=double_sided,
+        label_padding=label_padding,
+    )
     sheet.generate()
     sheet.c.save()
 

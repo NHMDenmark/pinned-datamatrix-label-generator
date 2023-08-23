@@ -1,7 +1,8 @@
 from pinned_datamatrix.datamatrix_generator import DataMatrix
 from pinned_datamatrix.label_generator import Label
 from pinned_datamatrix.sheet_generator import Sheet
-from pinned_datamatrix.utils import svg_to_pil
+from pinned_datamatrix.utils import svg_to_pil, svg_to_png
+from pinned_datamatrix.styles import NHMD, NHMA
 import xml.etree.ElementTree as ET
 from reportlab.graphics import renderPDF
 from reportlab.pdfgen import canvas
@@ -29,45 +30,58 @@ def create_example_datamatrix():
     img.save("examples/example_datamatrix.png")
 
 
-def create_example_label():
+def create_NHMD_label():
     # create example label and save as svg and png
-    label = Label(
-        data="000333999",
-        width=12,
-        height=5,
-        font_size=3.7,
-        text_lines=["NHMD", "000333999"],
-        check_overlap=False,  # ignore tiny overlap between text and datamatrix
-    )
+    label = NHMD(23456789)
 
     # save svg
-    label.svg_to_file("examples/example_label.svg")
+    label.svg_to_file("examples/NHMD_label.svg")
 
     # save png
-    img = svg_to_pil(label.svg)
-    img.save("examples/example_label.png")
+    png_bytes = svg_to_png(label.svg, dpi=1200)
+    with open("examples/NHMD_label.png", "wb") as f:
+        f.write(png_bytes)
 
     # save pdf
     drawing = svg2rlg(io.StringIO(label.svg_to_string()))
-    c = canvas.Canvas("examples/example_label.pdf", pagesize=(12 * mm, 5 * mm))
+    c = canvas.Canvas("examples/NHMD_label.pdf", pagesize=(12 * mm, 5 * mm))
     renderPDF.draw(drawing, c, 0, 0)
     c.save()
 
 
-def create_example_sheet():
+def create_NHMA_label():
+    # create example label and save as svg and png
+    label = NHMA(137, "ENTOMOLOGY")
+
+    # save svg
+    label.svg_to_file("examples/NHMA_label.svg")
+
+    # save png
+    png_bytes = svg_to_png(label.svg, dpi=1200)
+    with open("examples/NHMA_label.png", "wb") as f:
+        f.write(png_bytes)
+
+    # save pdf
+    drawing = svg2rlg(io.StringIO(label.svg_to_string()))
+    c = canvas.Canvas("examples/NHMA_label.pdf", pagesize=(19 * mm, 14 * mm))
+    renderPDF.draw(drawing, c, 0, 0)
+    c.save()
+
+
+def create_NHMD_sheet():
     sheet = Sheet(
-        labels=[
-            Label(
-                data=str(num).zfill(9),
-                width=12,
-                height=5,
-                font_size=3.7,
-                text_lines=["NHMD", str(num).zfill(9)],
-                check_overlap=False,  # ignore tiny overlap between text and datamatrix
-            )
-            for num in range(1000)
-        ],
-        output_path="examples/example_sheet.pdf",
+        labels=[NHMD(num) for num in range(714)],
+        output_path="examples/NHMD_doublesided_sheet.pdf",
+        double_sided=True,
+    )
+    sheet.generate()
+    sheet.c.save()
+
+
+def create_NHMA_sheet():
+    sheet = Sheet(
+        labels=[NHMA(num, "ENTOMOLOGY") for num in range(714)],
+        output_path="examples/NHMA_doublesided_sheet.pdf",
         double_sided=True,
     )
     sheet.generate()
@@ -76,5 +90,7 @@ def create_example_sheet():
 
 if __name__ == "__main__":
     create_example_datamatrix()
-    create_example_label()
-    create_example_sheet()
+    create_NHMD_label()
+    create_NHMA_label()
+    create_NHMD_sheet()
+    create_NHMA_sheet()

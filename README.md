@@ -1,5 +1,13 @@
 # Pinned Datamatrix Label Generator
 
+
+| Style | Image |
+|-------|-------|
+| NHMD  | <img src="examples/NHMD_label.png" alt="NHMD" width="120" /> | 
+| NHMA  | <img src="examples/NHMA_label.png" alt="NHMA" width="140" style=""/> |
+
+
+
 ## About
 
 This repository hosts a work-in-progress Python package for generating single or double-sided labels with text, datamatrices, and pin holes. This package, `pinned_datamatrix`, is particularly useful for generating labels for pinned insects. The generated labels are vector graphics, which are then embedded into PDF files. These labels can be printed at any resolution, making it a versatile tool for various needs.
@@ -14,7 +22,7 @@ Please note that since the package is under active development, the code can cha
 - Embed generated labels into PDF files for ease of printing.
 
 ## Installation
-
+Requires Python 3.10 or later.
 
 To install the `pinned_datamatrix` package, you have two main methods:
 ### 1. Cloning the repository and installing locally:
@@ -56,39 +64,45 @@ python -m pinned_datamatrix --help
 This will display:
 
 ```bash
-Usage: python -m pinned_datamatrix [OPTIONS]
+Usage: pinned_datamatrix [OPTIONS]
 
-Generate a PDF with datamatrix labels
+  Generate a PDF with datamatrix labels
 
 Options:
-  -o, --output FILE       The output path of the PDF file  [required]
-  -t, --top-text TEXT     The top text  [required]
-  -m, --middle-text TEXT  The middle text
-  -n, --numbers TEXT      The numbers as a range or list  [required]
-  --help                  Show this message and exit.
+  -s, --style [NHMD|NHMA]    The label style  [required]
+  -b, --bottom-text TEXT     The bottom text for NHMA style labels
+  -n, --numbers TEXT         The numbers as a range or list  [required]
+  -o, --output FILE          The output path of the PDF file  [required]
+  -p, --label-padding FLOAT  The padding around the label in mm
+  --help                     Show this message and exit.
 ```
 
 Example usage:
 
+**NHMD style labels with numbers 1-1000 and 2000-3000**
 ```bash
-python -m pinned_datamatrix -o output.pdf -t "NHMD" -n "1-2000"
+python -m pinned_datamatrix -s NHMD -n 1-1000,2000-3000 -o labels.pdf
 ```
 
-This will generate a PDF file named output.pdf with labels having the top text "NHMD" and numbers ranging from 1 to 2000
-
+**NHMA style labels with numbers ranging from 1 to 2000**
+```bash
+python -m pinned_datamatrix -s NHMA  -b ENTOMOLOGY -n 1-2000 -o labels.pdf
+```
 
 ## Examples
 
-The `examples` directory contains a variety of examples illustrating how to generate and utilize labels:
+The `examples` directory contains a variety of examples illustrating the use of the package. These examples include:
 
-- `create_examples.py`: An example script showing how to create datamatrix labels.
+- `create_examples.py`: An example script showing how to create datamatrices, labels, and sheets.
 - `example_datamatrix.png`, `example_datamatrix.svg`: Examples of datamatrix barcodes.
-- `example_label.pdf`, `example_label.png`, `example_label.svg`: Example labels in different formats.
-- `example_sheet.pdf`: An example of a sheet of labels.
+- `NHMD_label.pdf`, `NHMD_label.png`, `NHMD_label.svg`: Example NHMD style labels.
+- `NHMA_label.pdf`, `NHMA_label.png`, `NHMA_label.svg`: Example NHMA style labels.
+- `NHMA_doublesided_sheet.pdf`, `NHMD_doublesided_sheet.pdf`: Example double-sided sheets of labels.
+
 
 ## Tests
 
-The `tests` directory contains unit tests for the package. These tests cover the datamatrix generation, label generation, and sheet generation functionalities. To run the tests, use the pytest command:
+The `tests` directory contains unit tests for the package. These tests cover the datamatrix generation, label generation, and sheet generation. To run the tests, you can use the `pytest` command from the root directory of the repository:
 
 ```bash
 pytest
