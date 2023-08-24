@@ -1,0 +1,26 @@
+Metadata-Version: 2.1
+Name: pinned_datamatrix
+Version: 0.1.1
+Author-email: Laurits Fredsgaard Larsen <laurits@fredsgaardlarsen.com>
+License-Expression: MIT
+License-File: LICENCE
+Classifier: Development Status :: 4 - Beta
+Classifier: Framework :: Pytest
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Multimedia :: Graphics
+Classifier: Topic :: Printing
+Requires-Python: >=3.10
+Requires-Dist: click<9.0.0,>=8.1.6
+Requires-Dist: numpy~=1.25.1
+Requires-Dist: pillow~=10.0.0
+Requires-Dist: pylibdmtx>=0.1.10
+Requires-Dist: reportlab>=4.0.4
+Requires-Dist: rlpycairo~=0.3.0
+Requires-Dist: svglib~=1.5.1
+Requires-Dist: tqdm~=4.65.2
+Provides-Extra: dev
+Requires-Dist: pytest~=6.2.5; extra == 'dev'
+Requires-Dist: zxing-cpp~=2.1.0; extra == 'dev'

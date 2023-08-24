@@ -10,6 +10,7 @@ from .utils import are_overlapping
 
 FONT_PATH = "resources/fonts/Inconsolata/Inconsolata-ExtraBold.ttf"
 FONT_PATH = pkg_resources.resource_filename("pinned_datamatrix", FONT_PATH)
+print(FONT_PATH)
 SVG_NAMESPACE = "http://www.w3.org/2000/svg"
 PT_TO_MM = 0.352778  # 1pt = 0.352778mm
 

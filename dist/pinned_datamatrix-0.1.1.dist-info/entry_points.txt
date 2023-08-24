@@ -1,0 +1,2 @@
+[console_scripts]
+pinned_datamatrix = pinned_datamatrix.__main__:main

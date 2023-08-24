@@ -3,6 +3,7 @@ from pinned_datamatrix.label_generator import Label, SVG_NAMESPACE, PT_TO_MM
 import xml.etree.ElementTree as ET
 from pinned_datamatrix.utils import svg_to_pil
 import zxingcpp
+from svglib.fonts import find_font
 
 
 class TestLabel:
@@ -16,6 +17,9 @@ class TestLabel:
             font_size=3.55,
             check_overlap=True,
         )
+
+    def test_font_is_registered(self):
+        assert find_font("Inconsolata", weight="800") == ("Inconsolata-800", True)
 
     def test_svg_to_string(self, test_label):
         """Test that the svg_string can be generated and loaded as an svg file"""
