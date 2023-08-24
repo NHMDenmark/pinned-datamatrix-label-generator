@@ -24,19 +24,21 @@ Please note that since the package is under active development, the code can cha
 ## Installation
 Requires Python 3.10 or later.
 
+**Prerequisites**: Ensure that `git` is installed on your system for the following installation methods.
+
 Before installing the `pinned_datamatrix` package, you need to ensure that the `libdmtx` shared library is installed on your system. This library is a requirement for `pylibdmtx`, which the package relies on. Depending on your operating system, you might need to install this library separately:
 
 ### For Mac OS X:
 You can use Homebrew to install `libdmtx`:
-\```bash
+```bash
 brew install libdmtx
-\```
+```
 
 ### For Linux:
 You can use the package manager to install `libdmtx`:
-\```bash
+```bash
 sudo apt-get install libdmtx0b
-\```
+```
 
 On Windows, please note that the `libdmtx` DLLs are included with the Python wheels, so you don't need to install them separately.
 
@@ -52,12 +54,12 @@ cd pinned-datamatrix-label-generator
 ```
 Then, install the package using `pip`:
 ```bash
-pip install .
+python -m pip install .
 ```
 ### 2. Direct installation via `pip`:
 You can directly install the package from the GitHub repository:
 ```bash
-pip install git+https://github.com/lauritsf/pinned-datamatrix-label-generator.git
+python -m pip install git+https://github.com/lauritsf/pinned-datamatrix-label-generator.git
 ```
 
 
@@ -92,7 +94,7 @@ Options:
   -b, --bottom-text TEXT     The bottom text for NHMA style labels
   -n, --numbers TEXT         The numbers as a range or list  [required]
   -o, --output FILE          The output path of the PDF file  [required]
-  -p, --label-padding FLOAT  The padding around the label in mm
+  -p, --label-padding FLOAT  The padding around the label in mm (default: 0.25)
   --help                     Show this message and exit.
 ```
 
@@ -106,6 +108,11 @@ python -m pinned_datamatrix -s NHMD -n 1-1000,2000-3000 -o labels.pdf
 **NHMA style labels with numbers ranging from 1 to 2000**
 ```bash
 python -m pinned_datamatrix -s NHMA  -b ENTOMOLOGY -n 1-2000 -o labels.pdf
+```
+
+**NHMD style labels with numbers 10-25 and 123456789 and a label padding of 0.5mm**
+```bash
+python -m pinned_datamatrix -s NHMD -n 10-25,123456789 -o labels.pdf -p 0.5
 ```
 
 ## Examples

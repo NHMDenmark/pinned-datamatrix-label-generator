@@ -69,7 +69,7 @@ def parse_number_range(
     "--label-padding",
     "-p",
     default=0.25,  # = 0.5mm between each label
-    help="The padding around the label in mm",
+    help="The padding around the label in mm (default: 0.25)",
     callback=validate_non_negative,
 )
 def main(style, bottom_text, numbers, output, label_padding):
