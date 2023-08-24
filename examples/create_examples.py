@@ -63,7 +63,8 @@ def create_NHMA_label():
 
     # save pdf
     drawing = svg2rlg(io.StringIO(label.svg_to_string()))
-    c = canvas.Canvas("examples/NHMA_label.pdf", pagesize=(19 * mm, 14 * mm))
+    widht, height = label.width * mm, label.height * mm
+    c = canvas.Canvas("examples/NHMA_label.pdf", pagesize=(widht, height))
     renderPDF.draw(drawing, c, 0, 0)
     c.save()
 
