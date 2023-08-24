@@ -10,7 +10,7 @@ authors = [
     { name = "Laurits Fredsgaard Larsen", email = "laurits@fredsgaardlarsen.com" },
 ]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
     "Topic :: Multimedia :: Graphics",
     "Topic :: Printing",
