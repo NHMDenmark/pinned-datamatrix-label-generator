@@ -24,7 +24,26 @@ Please note that since the package is under active development, the code can cha
 ## Installation
 Requires Python 3.10 or later.
 
-To install the `pinned_datamatrix` package, you have two main methods:
+Before installing the `pinned_datamatrix` package, you need to ensure that the `libdmtx` shared library is installed on your system. This library is a requirement for `pylibdmtx`, which the package relies on. Depending on your operating system, you might need to install this library separately:
+
+### For Mac OS X:
+You can use Homebrew to install `libdmtx`:
+\```bash
+brew install libdmtx
+\```
+
+### For Linux:
+You can use the package manager to install `libdmtx`:
+\```bash
+sudo apt-get install libdmtx0b
+\```
+
+On Windows, please note that the `libdmtx` DLLs are included with the Python wheels, so you don't need to install them separately.
+
+For more detailed information about `pylibdmtx`, you can visit the [pylibdmtx GitHub repository](https://github.com/NaturalHistoryMuseum/pylibdmtx).
+
+Once `libdmtx` is installed (if needed), you can proceed with installing the `pinned_datamatrix` package using either of the following methods:
+
 ### 1. Cloning the repository and installing locally:
 First, clone the repository:
 ```bash	
