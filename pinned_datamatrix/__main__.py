@@ -68,7 +68,7 @@ def parse_number_range(
 @click.option(
     "--label-padding",
     "-p",
-    default=0.25,  # = 5mm between each label
+    default=0.25,  # = 0.5mm between each label
     help="The padding around the label in mm",
     callback=validate_non_negative,
 )
