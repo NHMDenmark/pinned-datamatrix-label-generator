@@ -7,7 +7,7 @@ name = "pinned_datamatrix"
 dynamic = ["version"]
 license = "MIT"
 authors = [
-    { name = "Laurits Fredsgaard Larsen", email = "laurits@fredsgaardlarsen.com" },
+    { name = "Laurits Fredsgaard Larsen", email = "79061425+lauritsf@users.noreply.github.com" },
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -39,7 +39,7 @@ pinned_datamatrix = "pinned_datamatrix.__main__:main"
 
 # Optional dependencies
 [project.optional-dependencies]
-dev = ["pytest~=6.2.5", "zxing-cpp~=2.1.0"]
+dev = ["pytest~=6.2.5", "zxing-cpp~=2.1.0", "ruff~=0.4.5"]
 
 # Pytest configuration
 [tool.pytest.ini_options]
@@ -51,6 +51,27 @@ addopts = """
 -W ignore::DeprecationWarning:importlib._bootstrap:283
 """
 testpaths = ["tests"]
+
+# Formatting
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [ # https://docs.astral.sh/ruff/linter/#rule-selection
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+]
 
 # Versioning
 [tool.hatch.version]
