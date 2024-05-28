@@ -52,8 +52,8 @@ Once `libdmtx` is installed (if needed), you can proceed with installing the `pi
 
 First, clone the repository:
 
-```bash 
-git clone https://github.com/lauritsf/pinned-datamatrix-label-generator.git
+```bash
+git clone https://github.com/NHMDenmark/pinned-datamatrix-label-generator.git
 cd pinned-datamatrix-label-generator
 ```
 
@@ -68,7 +68,7 @@ python -m pip install .
 You can directly install the package from the GitHub repository:
 
 ```bash
-python -m pip install git+https://github.com/lauritsf/pinned-datamatrix-label-generator.git
+python -m pip install git+https://github.com/NHMDenmark/pinned-datamatrix-label-generator.git
 ```
 
 ## Usage
