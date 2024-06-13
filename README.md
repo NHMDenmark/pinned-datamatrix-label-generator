@@ -50,12 +50,22 @@ Once `libdmtx` is installed (if needed), you can proceed with installing the `pi
 
 ### 1. Cloning the repository and installing locally
 
-First, clone the repository:
+First, clone the repository.
+
+For using the original version, use:
 
 ```bash
 git clone https://github.com/NHMDenmark/pinned-datamatrix-label-generator.git
 cd pinned-datamatrix-label-generator
 ```
+
+For using the updated version with the new NHMA design (see [issue](https://github.com/orgs/NHMDenmark/projects/11/views/1?pane=issue&itemId=61955585))use:
+
+```bash
+git clone -b NHMA_label https://github.com/NHMDenmark/pinned-datamatrix-label-generator.git
+cd pinned-datamatrix-label-generator
+```
+
 
 Then, install the package using `pip`:
 
