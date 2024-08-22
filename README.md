@@ -20,7 +20,8 @@ Please note that since the package is under active development, the code can cha
 
 ## Installation
 
-Requires Python 3.10 or later.
+Requires Python 3.10 or 3.11. 
+3.12 is not tested for [pylibdmtx](https://github.com/NaturalHistoryMuseum/pylibdmtx).
 
 **Prerequisites**: Ensure that `git` is installed on your system for the following installation methods.
 
