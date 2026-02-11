@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+import math
 import xml.etree.ElementTree as ET
 from svglib.svglib import svg2rlg
 from svglib.fonts import register_font
@@ -46,6 +48,15 @@ ALIGNMENT_OPTIONS = [
     "bottom_right",
 ]
 
+@dataclass
+class Text:
+    text: str
+    orientation: str = "top"  # top, right, bottom, left
+    alignment: str = "center" # left, center, right
+    font_size: float = 3.0 
+    line_spacing: float = 0.5
+    margins: tuple[float, float, float, float] = (0,0,0,0)  # mm (top, right, bottom, left)
+    offset: tuple[float, float] = (0, 0)
 
 class Label:
     def __init__(
@@ -53,17 +64,8 @@ class Label:
         data: str,
         width: float,
         height: float,
-        text_lines: list[str],
+        text_lines: list[Text],
         font_size: float,
-        text_oritentation: str = "top",  # top, right, bottom, left
-        text_align="right",  # left, center, right
-        text_area_margins: tuple[float, float, float, float] = (
-            0,
-            5,
-            0,
-            1.3,
-        ),  # mm (top, right, bottom, left)
-        text_line_spacing: float = 0.5,  # mm
         datamatrix_length: float = 5,  # 5x5 mm
         datamatrix_alignment: str = "top_right",
         datamatrix_offset: tuple[float, float] = (0, 0),  # (x, y) in mm
@@ -78,14 +80,14 @@ class Label:
             raise ValueError("font_size must be positive")
         if len(text_lines) == 0:
             raise ValueError("text_lines must contain at least one line")
-        if not all(isinstance(line, str) for line in text_lines):
-            raise TypeError("text_lines must contain only strings")
-        if text_oritentation not in ORITENTATION_ROTATION_MAP.keys():
-            raise ValueError(
-                "text_orientation must be either top, right, bottom, or left"
-            )
-        if text_align not in TEXT_ALIGN_MAP.keys():
-            raise ValueError("text_align must be either left, center, or right")
+        if not all(isinstance(line, Text) for line in text_lines):
+            raise TypeError("text_lines must contain only Text objects")
+        # if text_oritentation not in ORITENTATION_ROTATION_MAP.keys():
+        #     raise ValueError(
+        #         "text_orientation must be either top, right, bottom, or left"
+        #     )
+        # if text_align not in TEXT_ALIGN_MAP.keys():
+        #     raise ValueError("text_align must be either left, center, or right")
         if dot_alignment is not None and dot_alignment not in ALIGNMENT_OPTIONS:
             raise ValueError(f"dot_alignment must be one of {ALIGNMENT_OPTIONS}")
         if datamatrix_alignment not in ALIGNMENT_OPTIONS:
@@ -99,10 +101,6 @@ class Label:
 
         self.text_lines = text_lines
         self.font_size = font_size
-        self.text_orientation = text_oritentation
-        self.text_align = text_align
-        self.text_area_margins = text_area_margins
-        self.text_line_spacing = text_line_spacing
 
         self.datamatrix_length = datamatrix_length
         self.datamatrix_offset = datamatrix_offset
@@ -116,7 +114,9 @@ class Label:
         self.datamatrix = self._add_datamatrix()
         if self.dot_alignment is not None:
             self.dot = self._add_dot()
-        self.text = self._add_text()
+
+        for text in self.text_lines:
+            self._add_text(text)
 
         if check_overlap:
             self._check_overlap()
@@ -150,6 +150,7 @@ class Label:
         datamatrix = DataMatrix(self.data, size="SquareAuto")
         datamatrix = datamatrix.create_svg()
 
+      
         datamatrix.tag = "g"
         datamatrix.attrib = {
             "id": "datamatrix",
@@ -234,108 +235,49 @@ class Label:
         )
         self.svg.append(dot)
         return dot
+    
+    def _add_text(self, text: Text) -> ET.Element:
+        angle = ORITENTATION_ROTATION_MAP.get(text.orientation, 0)
+        text_anchor = TEXT_ALIGN_MAP.get(text.alignment, "end")
 
-    def _add_text(self) -> ET.Element:
-        angle = ORITENTATION_ROTATION_MAP.get(self.text_orientation, 0)
-
-        text_anchor = TEXT_ALIGN_MAP.get(self.text_align, "end")
-
-        top, right, bottom, left = self.text_area_margins
+        top, right, bottom, left = text.margins
 
         if text_anchor == "start":
-            x = left
+            base_x = left
         elif text_anchor == "middle":
-            x = left + (self.width - left - right) / 2
+            base_x = left + (self.width - left - right) / 2
         elif text_anchor == "end":
-            x = self.width - right
+            base_x = self.width - right
         else:
-            raise ValueError(f"text_align must be one of {TEXT_ALIGN_MAP.keys()}")
+            raise ValueError(f"text alignment must be one of {TEXT_ALIGN_MAP.keys()}")
 
-        rotation = ""
-        translation = ""
-        rot_y = top
-        if self.text_orientation == "top":
-            dy = (self.height - top - bottom) / 2
-            translation = f"translate(0 {dy})"
-        elif self.text_orientation == "right":
-            dx = 0
-            dy = 0
-            if text_anchor == "start":
-                rot_x = left
-                dx = (self.width - left - right) / 2
-            elif text_anchor == "middle":
-                dy = (self.height - top - bottom) / 2
-                rot_x = left + (self.width - left - right) / 2
-            else:  # text_anchor == "end":
-                dx = -(self.width - left - right) / 2
-                dy = self.height - top - bottom
-                rot_x = self.width - right
-            rotation = f"rotate ({angle} {rot_x} {rot_y})"
-            translation = f"translate({dx} {dy})"
-        elif self.text_orientation == "bottom":
-            dx = 0
-            dy = 0
-            if text_anchor == "start":
-                rot_x = left
-                dx = self.width - left - right
-                dy = (self.height - top - bottom) / 2
-            elif text_anchor == "middle":
-                rot_x = left + (self.width - left - right) / 2
-                dy = (self.height - top - bottom) / 2
-            else:  # text_anchor == "end":
-                rot_x = self.width - right
-                dx = -(self.width - left - right)
-                dy = (self.height - top - bottom) / 2
-            rotation = f"rotate ({angle} {rot_x} {rot_y})"
-            translation = f"translate({dx} {dy})"
-        else:  # self.text_orientation == "left":
-            dx = 0
-            dy = 0
-            if text_anchor == "start":
-                dx = (self.width - left - right) / 2
-                dy = self.height - top - bottom
-            elif text_anchor == "middle":
-                dy = (self.height - top - bottom) / 2
-            else:  # text_anchor == "end":
-                dx = -(self.width - left - right) / 2
+        dx, dy = text.offset
+        x = base_x + dx
+        y = top + dy
 
-            rotation = f"rotate ({angle} {x} {rot_y})"
-            translation = f"translate({dx} {dy})"
+        font_size_mm = text.font_size * PT_TO_MM
 
-        text_group = ET.Element(
-            "g",
-            {"id": "text", "transform": f"{translation} {rotation}"},
+        transform_str = f"rotate({angle} {x} {y})"
+
+        text_element = ET.Element(
+            "text",
+            {
+                "id": f"text_{text.text}",
+                "x": str(x),
+                "y": str(y),
+                "font-family": "Inconsolata",
+                "text-anchor": text_anchor,
+                "font-style": "normal",
+                "font-weight": "800",
+                "font-size": str(font_size_mm),
+                "transform": transform_str
+            }
         )
-        font_size = self.font_size * PT_TO_MM
 
-        total_height = (font_size + self.text_line_spacing) * (len(self.text_lines) - 1)
-        y_positions = np.linspace(
-            -total_height / 2,
-            total_height / 2,
-            len(self.text_lines),
-        )
-        # svglib doesn't support dominant-baseline, so we have to manually adjust the y positions
-        y_positions += font_size * 0.3
-
-        for i, line in enumerate(self.text_lines):
-            text = ET.Element(
-                "text",
-                {
-                    "id": f"text_line_{i}",
-                    "x": str(x),
-                    "y": str(top + y_positions[i]),
-                    "font-family": "Inconsolata",
-                    "text-anchor": text_anchor,
-                    # "dominant-baseline": "middle",  # svglib doesn't support this
-                    "font-style": "normal",
-                    "font-weight": "800",
-                    "font-size": str(font_size),
-                },
-            )
-            text.text = line
-            text_group.append(text)
-        self.svg.append(text_group)
-        return text_group
+        text_element.text = text.text
+        self.svg.append(text_element)
+        
+        return text_element
 
     def _check_overlap(self) -> None:
         drawing = svg2rlg(io.StringIO(ET.tostring(self.svg, encoding="unicode")))
@@ -362,14 +304,4 @@ class Label:
                     id1 = objs[i].getProperties().get("svgid", None)
                     id2 = objs[j].getProperties().get("svgid", None)
                     msg = f"Objects {id1} and {id2} are overlapping by {min(dx, dy)}mm."
-                    raise Warning(msg)
-            if objs[i].getProperties().get("svgid", None) == "text":
-                # check that bounds are within the text area
-                if (
-                    bounds1[0] < self.text_area_margins[3]
-                    or bounds1[1] < self.text_area_margins[0]
-                    or bounds1[2] > self.width - self.text_area_margins[1]
-                    or bounds1[3] > self.height - self.text_area_margins[2]
-                ):
-                    msg = f"Text object {objs[i]} is outside of the text area."
                     raise Warning(msg)
