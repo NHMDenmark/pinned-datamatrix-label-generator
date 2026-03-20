@@ -2,10 +2,9 @@ import click
 from tqdm import tqdm
 from functools import partial as Partial
 
-
 from .sheet_generator import Sheet
 from .label_generator import Label
-from .styles import NHMD, NHMA
+from .styles import NHMD, NHMA, NHMD_fish
 
 
 def validate_non_negative(
@@ -42,7 +41,7 @@ def parse_number_range(
     "--style",
     "-s",
     required=True,
-    type=click.Choice(["NHMD", "NHMA"]),
+    type=click.Choice(["NHMD", "NHMA", "NHMD_fish"]),
     help="The label style",
 )
 @click.option(
@@ -76,10 +75,13 @@ def main(style, bottom_text, numbers, output, label_padding):
     """
     Generate a PDF with datamatrix labels
     """
+    if style == "NHMD":
+        label_func = Partial(NHMD)
+    elif style == "NHMA":
+        label_func = Partial(NHMA, bottom_text=bottom_text)
+    elif style == "NHMD_fish":
+        label_func = Partial(NHMD_fish)
 
-    label_func = (
-        Partial(NHMD) if style == "NHMD" else Partial(NHMA, bottom_text=bottom_text)
-    )
     labels = generate_labels(label_func, numbers)
     generate_pdf(labels, output, double_sided=True, label_padding=label_padding)
 

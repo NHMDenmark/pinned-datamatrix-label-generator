@@ -71,7 +71,7 @@ class Label:
         datamatrix_offset: tuple[float, float] = (0, 0),  # (x, y) in mm
         dot_radius: float = 0.25,  # 0.25 mm
         dot_offset: tuple[float, float] = (0.7, 0),  # 0.7 mm from left side
-        dot_alignment: str | None = "center_left",
+        dot_alignment: str = None, # | None = "center_left",
         check_overlap: bool = True,
     ):
         if width <= 0 or height <= 0:
@@ -294,7 +294,7 @@ class Label:
                 or bounds1[2] > self.width
                 or bounds1[3] > self.height
             ):
-                msg = f"Object {objs[i]} is outside of the label."
+                msg = f"Object {objs[i]} is outside of the label. Bounds: {bounds1}"
                 raise Warning(msg)
             for j in range(i + 1, len(objs)):
                 bounds2: tuple[float, float, float, float] = objs[j].getBounds()
