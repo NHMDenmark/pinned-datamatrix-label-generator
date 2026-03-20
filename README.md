@@ -99,6 +99,11 @@ Options:
 
 Example usage:
 
+**Test creates one matrix and the text NHMD // 000000324 in a test.pdf file**
+```bash
+python -m pinned_datamatrix -s NHMD_fish -n 324 -o test.pdf
+```
+
 **NHMD style labels with numbers 1-1000 and 2000-3000**
 
 ```bash
