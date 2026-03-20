@@ -7,9 +7,7 @@
 
 ## About
 
-This repository hosts a work-in-progress Python package for generating single or double-sided labels with text, datamatrices, and pin holes. This package, `pinned_datamatrix`, is particularly useful for generating labels for pinned insects. The generated labels are vector graphics, which are then embedded into PDF files. These labels can be printed at any resolution, making it a versatile tool for various needs.
-
-Please note that since the package is under active development, the code can change at any time.
+Configurable package for use by dassco when creating labels.
 
 ## Key Features
 
@@ -25,6 +23,8 @@ Requires Python 3.10 or later.
 **Prerequisites**: Ensure that `git` is installed on your system for the following installation methods.
 
 Before installing the `pinned_datamatrix` package, you need to ensure that the `libdmtx` shared library is installed on your system. This library is a requirement for `pylibdmtx`, which the package relies on. Depending on your operating system, you might need to install this library separately:
+
+First open a terminal window.
 
 ### For Mac OS X
 
@@ -50,11 +50,17 @@ Once `libdmtx` is installed (if needed), you can proceed with installing the `pi
 
 ### 1. Cloning the repository and installing locally
 
-First, clone the repository:
+Clone the repository:
 
 ```bash
 git clone https://github.com/NHMDenmark/pinned-datamatrix-label-generator.git
+```
+
+Prepare for installation:
+
+```bash
 cd pinned-datamatrix-label-generator
+git checkout dassco-label-creator
 ```
 
 Then, install the package using `pip`:
@@ -63,30 +69,11 @@ Then, install the package using `pip`:
 python -m pip install .
 ```
 
-### 2. Direct installation via `pip`
-
-You can directly install the package from the GitHub repository:
-
-```bash
-python -m pip install git+https://github.com/NHMDenmark/pinned-datamatrix-label-generator.git
-```
-
 ## Usage
 
-### 1. As a library
+1. Command Line Utility:
 
-After installation, you can import components of the `pinned_datamatrix` package in your Python script or interpreter.
-
-Example:
-
-```python
-from pinned_datamatrix import Label, Sheet
-# ... your code using these components```
-```
-
-2. Command Line Utility:
-
-You can also generate sheets of labels directly using the command-line interface. The tool can be accessed either via the entry point pinned_datamatrix or using python -m pinned_datamatrix.
+You generate sheets of labels directly using the command-line interface. The tool can be accessed either via the entry point pinned_datamatrix or using python -m pinned_datamatrix.
 
 Here's how you can view the available options:
 
@@ -118,12 +105,6 @@ Example usage:
 python -m pinned_datamatrix -s NHMD -n 1-1000,2000-3000 -o labels.pdf
 ```
 
-**NHMA style labels with numbers ranging from 1 to 2000**
-
-```bash
-python -m pinned_datamatrix -s NHMA  -b ENTOMOLOGY -n 1-2000 -o labels.pdf
-```
-
 **NHMD style labels with numbers 10-25 and 123456789 and a label padding of 0.5mm**
 
 ```bash
@@ -139,6 +120,12 @@ The `examples` directory contains a variety of examples illustrating the use of 
 - `NHMD_label.pdf`, `NHMD_label.png`, `NHMD_label.svg`: Example NHMD style labels.
 - `NHMA_label.pdf`, `NHMA_label.png`, `NHMA_label.svg`: Example NHMA style labels.
 - `NHMA_doublesided_sheet.pdf`, `NHMD_doublesided_sheet.pdf`: Example double-sided sheets of labels.
+
+## Configuring new styles
+
+Take a look at the pinned_datamatrix/styles.py You can either edit one of the existing styles (recommended - save the style function outcommented so there is no need to edit anywhere else) or add a new one. Adding a new one requires some further updates in the pinned_datamatrix/_main_.py around lines 45 and 75. 
+
+The NHMD_fish style at the bottom of styles.py has descriptions for the fields you would want to edit.
 
 ## Tests
 
