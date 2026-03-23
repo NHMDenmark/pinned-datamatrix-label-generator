@@ -45,12 +45,6 @@ def parse_number_range(
     help="The label style",
 )
 @click.option(
-    "--bottom-text",
-    "-b",
-    default="",
-    help="The bottom text for NHMA style labels",
-)
-@click.option(
     "--numbers",
     "-n",
     required=True,
@@ -71,14 +65,14 @@ def parse_number_range(
     help="The padding around the label in mm (default: 0.25)",
     callback=validate_non_negative,
 )
-def main(style, bottom_text, numbers, output, label_padding):
+def main(style, numbers, output, label_padding):
     """
     Generate a PDF with datamatrix labels
     """
     if style == "NHMD":
         label_func = Partial(NHMD)
     elif style == "NHMA":
-        label_func = Partial(NHMA, bottom_text=bottom_text)
+        label_func = Partial(NHMA)
     elif style == "NHMD_fish":
         label_func = Partial(NHMD_fish)
 
@@ -103,7 +97,6 @@ def generate_pdf(
     )
     sheet.generate()
     sheet.c.save()
-
 
 if __name__ == "__main__":
     main()

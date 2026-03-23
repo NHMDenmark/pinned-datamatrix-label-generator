@@ -89,8 +89,7 @@ Usage: pinned_datamatrix [OPTIONS]
   Generate a PDF with datamatrix labels
 
 Options:
-  -s, --style [NHMD|NHMA]    The label style  [required]
-  -b, --bottom-text TEXT     The bottom text for NHMA style labels
+  -s, --style [NHMD|NHMA|NHMD_fish]    The label style  [required]
   -n, --numbers TEXT         The numbers as a range or list  [required]
   -o, --output FILE          The output path of the PDF file  [required]
   -p, --label-padding FLOAT  The padding around the label in mm (default: 0.25)
@@ -110,15 +109,15 @@ python -m pinned_datamatrix -s NHMD_fish -n 324 -o test.pdf
 python -m pinned_datamatrix -s NHMD -n 1-1000,2000-3000 -o labels.pdf
 ```
 
-**NHMD style labels with numbers 10-25 and 123456789 and a label padding of 0.5mm**
+**NHMA style labels with numbers 10-25 and 123456789 and a label padding of 0.5mm**
 
 ```bash
-python -m pinned_datamatrix -s NHMD -n 10-25,123456789 -o labels.pdf -p 0.5
+python -m pinned_datamatrix -s NHMA -n 10-25,123456789 -o labels.pdf -p 0.5
 ```
 
 ## Examples
 
-The `examples` directory contains a variety of examples illustrating the use of the package. These examples include:
+The `examples` directory contains a variety of examples illustrating the use of the package (note these are from previous versions of this library and may not perfectly reflect how the labels look now). These examples include:
 
 - `create_examples.py`: An example script showing how to create datamatrices, labels, and sheets.
 - `example_datamatrix.png`, `example_datamatrix.svg`: Examples of datamatrix barcodes.
