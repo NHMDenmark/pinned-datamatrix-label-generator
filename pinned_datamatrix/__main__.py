@@ -65,7 +65,14 @@ def parse_number_range(
     help="The padding around the label in mm (default: 0.25)",
     callback=validate_non_negative,
 )
-def main(style, numbers, output, label_padding):
+@click.option(
+    "--double-sided",
+    "-d",
+    default=True,
+    help="Whether to print double sided labels (default: True)",
+)
+
+def main(style, numbers, output, label_padding, double_sided=True):
     """
     Generate a PDF with datamatrix labels
     """
@@ -77,7 +84,7 @@ def main(style, numbers, output, label_padding):
         label_func = Partial(NHMD_fish)
 
     labels = generate_labels(label_func, numbers)
-    generate_pdf(labels, output, double_sided=True, label_padding=label_padding)
+    generate_pdf(labels, output, double_sided, label_padding=label_padding)
 
 
 def generate_labels(label_func: Partial, numbers: list[int]) -> list[Label]:

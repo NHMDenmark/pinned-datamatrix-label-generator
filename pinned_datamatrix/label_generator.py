@@ -1,10 +1,8 @@
 from dataclasses import dataclass
-import math
 import xml.etree.ElementTree as ET
 from svglib.svglib import svg2rlg
 from svglib.fonts import register_font
 import io
-import numpy as np
 import pkg_resources
 from .datamatrix_generator import DataMatrix
 from .utils import are_overlapping
@@ -82,12 +80,6 @@ class Label:
             raise ValueError("text_lines must contain at least one line")
         if not all(isinstance(line, Text) for line in text_lines):
             raise TypeError("text_lines must contain only Text objects")
-        # if text_oritentation not in ORITENTATION_ROTATION_MAP.keys():
-        #     raise ValueError(
-        #         "text_orientation must be either top, right, bottom, or left"
-        #     )
-        # if text_align not in TEXT_ALIGN_MAP.keys():
-        #     raise ValueError("text_align must be either left, center, or right")
         if dot_alignment is not None and dot_alignment not in ALIGNMENT_OPTIONS:
             raise ValueError(f"dot_alignment must be one of {ALIGNMENT_OPTIONS}")
         if datamatrix_alignment not in ALIGNMENT_OPTIONS:
@@ -193,8 +185,6 @@ class Label:
 
         scale = self.datamatrix_length / float(datamatrix.attrib["width"])
         datamatrix.attrib["transform"] = f"translate({x}, {y}) scale({scale})"
-        #        x_pos = self.width - float(datamatrix.attrib["width"]) * scale
-        #        datamatrix.attrib["transform"] = f"translate({x_pos}, 0) scale({scale})"
         self.svg.append(datamatrix)
         return datamatrix
 

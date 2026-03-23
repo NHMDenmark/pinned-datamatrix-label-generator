@@ -93,6 +93,7 @@ Options:
   -n, --numbers TEXT         The numbers as a range or list  [required]
   -o, --output FILE          The output path of the PDF file  [required]
   -p, --label-padding FLOAT  The padding around the label in mm (default: 0.25)
+  -d, --double-sided BOOL    Make printing on both sides possible (defaul: True)
   --help                     Show this message and exit.
 ```
 
