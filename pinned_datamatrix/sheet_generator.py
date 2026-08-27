@@ -5,6 +5,8 @@ from reportlab.graphics import renderPDF
 from reportlab.graphics.shapes import Drawing, Rect
 from svglib.svglib import svg2rlg
 import io
+import os
+from datetime import datetime
 from tqdm import tqdm
 
 from .label_generator import Label
@@ -137,6 +139,7 @@ class Sheet:
             if y - drawing.height < self.margin_bottom:
                 new_page = True
                 self.c.showPage()
+                self.draw_header()
                 if self.double_sided:
                     # Print the back side of the page
                     for drawing_back, x_back, y_back in backs:
@@ -156,6 +159,24 @@ class Sheet:
             str(number),
         )
 
+    def draw_header(self):
+        filename = os.path.basename(self.output_path)
+        date = datetime.now().strftime("%Y-%m-%d")
+
+        self.c.setFont("Helvetica", 6)
+
+        self.c.drawRightString(
+            self.width - self.margin_right -15 * mm,
+            self.height - 8 * mm,
+            filename,
+        )
+
+        self.c.drawRightString(
+            self.width - self.margin_right,
+            self.height - 8 * mm,
+            date,
+        )
+
     def generate(self) -> None:
         """Generate the pdf with labels"""
         backs = []
@@ -165,6 +186,8 @@ class Sheet:
 
         row_number = 1
         row_started = False
+
+        self.draw_header()
 
         labels = tqdm(self.labels, desc="Drawing labels on pdf pages")
 
