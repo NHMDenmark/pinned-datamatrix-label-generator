@@ -74,7 +74,7 @@ def NHMD_fish(number: int) -> Label:
         font_size=1,
         text_lines=[
             Text( # you can add more text objects to the text_lines list to customize the label further
-                text="NHMD", 
+                text="NHMD",
                 alignment="left", # how the text is aligned within its text area
                 orientation="top", # which direction the text is oriented towards, top means the text will be printed with the top of the text facing towards the top of the label (normal reading orientation)
                 margins=(5,0,0,5), # mm offset from (top, right, bottom, left) Generally you just want to control the top and left margins and stay within the label size

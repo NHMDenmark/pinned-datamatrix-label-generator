@@ -18,7 +18,7 @@ Configurable package for use by dassco when creating labels.
 
 ## Installation
 
-Requires Python 3.10 or later.
+Requires Python 3.10 to 3.12 (15/4-26).
 
 **Prerequisites**: Ensure that `git` is installed on your system for the following installation methods.
 
@@ -94,6 +94,7 @@ Options:
   -o, --output FILE          The output path of the PDF file  [required]
   -p, --label-padding FLOAT  The padding around the label in mm (default: 0.25)
   -d, --double-sided BOOL    Make printing on both sides possible (defaul: True)
+  -nb, --numbered BOOL       Add numbered rows to the sheet (default: False)
   --help                     Show this message and exit.
 ```
 

@@ -19,6 +19,7 @@ class Sheet:
         page_size: tuple[float, float] = (297, 210),  # A4 landscape
         page_margins: tuple[float, float, float, float] = (15, 15, 15, 15),  # mm
         double_sided: bool = False,
+        numbered: bool = False,
     ):
         self.labels = labels
         self.width = page_size[0] * mm
@@ -30,6 +31,7 @@ class Sheet:
         self.output_path = output_path
         self.label_padding = label_padding * mm
         self.double_sided = double_sided
+        self.numbered = numbered
         self.c = canvas.Canvas(self.output_path, pagesize=(self.width, self.height))
 
         self._validate_inputs()
@@ -117,7 +119,7 @@ class Sheet:
 
     def _handle_page_overflow(
         self, drawing: Drawing, x: float, y: float, backs: list
-    ) -> tuple[float, float, list]:
+    ) -> tuple[float, float, list, bool]:
         """
         Handle page overflow by moving to the next page.
         Args:
@@ -128,37 +130,83 @@ class Sheet:
         Returns:
             The new x and y position and the list of drawings to print on the back side of the page
         """
+        new_page = False
         if x + drawing.width > self.width - self.margin_right:
             x = self.margin_left
             y -= drawing.height + self.label_padding * 2
             if y - drawing.height < self.margin_bottom:
+                new_page = True
                 self.c.showPage()
                 if self.double_sided:
                     # Print the back side of the page
                     for drawing_back, x_back, y_back in backs:
                         self._draw_label(drawing_back, x_back, y_back, is_back=True)
                     backs = []  # reset backs
+                    new_page = True
                     self.c.showPage()
                 y = self.height - self.margin_top
-        return x, y, backs
+        return x, y, backs, new_page
+
+    def _draw_row_number(self, number: int, y: float, drawing_height: float):
+        self.c.setFont("Helvetica", 4)
+
+        self.c.drawRightString(
+            self.margin_left / 2,
+            y - drawing_height / 2,
+            str(number),
+        )
 
     def generate(self) -> None:
         """Generate the pdf with labels"""
         backs = []
+
         x = self.margin_left
         y = self.height - self.margin_top
+
+        row_number = 1
+        row_started = False
+
         labels = tqdm(self.labels, desc="Drawing labels on pdf pages")
+
         for label in labels:
             # The conversion from svg to rlg is the slowest part of the process
             drawing = svg2rlg(io.StringIO(label.svg_to_string()))
+
             if drawing is None:
                 raise ValueError("Failed to create drawing from SVG data.")
-            x, y, backs = self._handle_page_overflow(drawing, x, y, backs)
+
+            x, y, backs, new_page = self._handle_page_overflow(
+                drawing, x, y, backs
+            )
+
+            if self.numbered:
+                if new_page:
+                    row_number = 1
+                    row_started = False
+            
+                # New row
+                if x == self.margin_left and row_started:
+                    row_number += 1
+
+                # If we're starting a row, draw its number
+                if x == self.margin_left:
+                    self._draw_row_number(
+                        row_number,
+                        y,
+                        drawing.height,
+                    )
+                    row_started = True
+
             self._draw_label(drawing, x, y)
+
             backs.append((drawing, x, y))
+
             x += drawing.width + self.label_padding * 2
+
         self.c.showPage()
+
         if self.double_sided:
             for drawing, x, y in backs:
                 self._draw_label(drawing, x, y, is_back=True)
+
             self.c.showPage()

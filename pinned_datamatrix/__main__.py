@@ -72,7 +72,14 @@ def parse_number_range(
     help="Whether to print double sided labels (default: True)",
 )
 
-def main(style, numbers, output, label_padding, double_sided=True):
+@click.option(
+    "--numbered",
+    "-nb",
+    default=False,
+    help="Add numbered rows to the sheet (default: False)",
+)
+
+def main(style, numbers, output, label_padding, double_sided=True, numbered=False):
     """
     Generate a PDF with datamatrix labels
     """
@@ -84,7 +91,7 @@ def main(style, numbers, output, label_padding, double_sided=True):
         label_func = Partial(NHMD_fish)
 
     labels = generate_labels(label_func, numbers)
-    generate_pdf(labels, output, double_sided, label_padding=label_padding)
+    generate_pdf(labels, output, double_sided, numbered, label_padding=label_padding)
 
 
 def generate_labels(label_func: Partial, numbers: list[int]) -> list[Label]:
@@ -94,12 +101,13 @@ def generate_labels(label_func: Partial, numbers: list[int]) -> list[Label]:
 
 
 def generate_pdf(
-    labels: list[Label], output: str, double_sided: bool, label_padding: float
+    labels: list[Label], output: str, double_sided: bool, numbered: bool, label_padding: float
 ):
     sheet = Sheet(
         labels=labels,
         output_path=output,
         double_sided=double_sided,
+        numbered=numbered,
         label_padding=label_padding,
     )
     sheet.generate()
